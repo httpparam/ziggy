@@ -95,7 +95,7 @@ export default function UserManagement({ initialUsers }: UserManagementProps) {
 
         <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Icon glyph="cloud" size={20} className="text-[#5bc0de]" />
+            <Icon glyph="download" size={20} className="text-[#5bc0de]" />
             <p className="text-sm text-zinc-400">Total Storage</p>
           </div>
           <p className="text-2xl font-bold text-white">{formatBytes(totalStorage)}</p>

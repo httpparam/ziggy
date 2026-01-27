@@ -1,7 +1,25 @@
+'use client'
+
 import { login } from '@/app/actions/auth'
 import Link from 'next/link'
+import { useState, useTransition } from 'react'
 
 export default function LoginPage() {
+  const [error, setError] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
+
+  async function handleSubmit(formData: FormData) {
+    setError(null)
+
+    startTransition(async () => {
+      const result = await login(formData)
+
+      if (result?.error) {
+        setError(result.error)
+      }
+    })
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-black px-4">
       <div className="w-full max-w-md">
@@ -12,7 +30,13 @@ export default function LoginPage() {
           Image hosting made simple
         </p>
 
-        <form action={login} className="space-y-6">
+        {error && (
+          <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-lg">
+            <p className="text-red-400 text-sm text-center">{error}</p>
+          </div>
+        )}
+
+        <form action={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-2">
               Email
@@ -45,9 +69,10 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-[#5bc0de] hover:bg-[#4a9dc4] text-black font-bold rounded-lg transition focus:ring-2 focus:ring-[#5bc0de]"
+            disabled={isPending}
+            className="w-full py-2 px-4 bg-[#5bc0de] hover:bg-[#4a9dc4] text-black font-bold rounded-lg transition focus:ring-2 focus:ring-[#5bc0de] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign In
+            {isPending ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
 
