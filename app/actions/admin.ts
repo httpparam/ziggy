@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidatePath } from 'next/cache'
 import { unstable_cache } from 'next/cache'
 
 export async function getUserStats() {
@@ -93,7 +93,6 @@ export async function wipeUser(userId: string) {
   await serviceSupabase.auth.admin.deleteUser(userId)
 
   revalidatePath('/admin')
-  revalidateTag('user-stats')
   return { success: true }
 }
 
@@ -154,5 +153,5 @@ const fetchUserStatsData = unstable_cache(
     return { profiles, userStorage, imageCount, userEmails }
   },
   ['user-stats-data'],
-  { revalidate: 30, tags: ['user-stats'] }
+  { revalidate: 30 }
 )

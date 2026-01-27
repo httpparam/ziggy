@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidatePath } from 'next/cache'
 import { unstable_cache } from 'next/cache'
 
 // Generate 7-8 character invite code
@@ -49,7 +49,6 @@ export async function createInvite(maxUses: number = 1) {
   }
 
   revalidatePath('/admin')
-  revalidateTag('invites')
   return { success: true, code }
 }
 
@@ -120,6 +119,5 @@ export async function deleteInvite(inviteId: string) {
   }
 
   revalidatePath('/admin')
-  revalidateTag('invites')
   return { success: true }
 }
