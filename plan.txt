@@ -1,0 +1,90 @@
+To replicate the core functionality of Zipline using Supabase and Claude Code, you can follow this structured implementation plan. This plan breaks the project into logical chunks that you can feed to Claude Code one by one.
+
+### Phase 1: Database & Storage Schema (The Foundation)
+
+Zipline relies heavily on tracking metadata and user permissions. You need to set up the Supabase migrations first.
+
+**Prompt for Claude Code:**
+
+> "Initialize a Supabase project with the following schema:
+> 1. A `profiles` table that extends `auth.users` with an `is_admin` (boolean) and `api_key` (text, hashed).
+> 2. An `images` table to store metadata: `id`, `created_at`, `file_name`, `file_type`, `file_size`, `storage_path`, and `user_id`.
+> 3. An `invites` table with `code` (unique string), `is_used` (boolean), and `created_by` (uuid).
+> 4. A storage bucket named 'uploads' with RLS policies: Public can read images, but only users with a valid profile can upload."
+> 
+> 
+
+### Phase 2: The "First User" & Invite Logic
+
+This handles your requirement for the first user becoming the admin and subsequent users needing invites.
+
+**Logic to implement:**
+
+* **Trigger:** A PostgreSQL trigger on `auth.users` that checks if it’s the first row. If so, set `is_admin = true`.
+* **Sign-up Guard:** A check in the signup flow that requires a valid code from the `invites` table unless `is_admin` is being created.
+
+**Prompt for Claude Code:**
+
+> "Create a PostgreSQL trigger and function in Supabase that automatically sets the first user who signs up as an admin. Then, create a Next.js API route for signup that validates an invite code against the `invites` table before allowing a new user record to be created."
+
+### Phase 3: API Key System & Shell Script Uploads
+
+Zipline’s best feature is the ability to upload via a simple POST request. You’ll need a custom API route that bypasses standard browser cookies in favor of an API header.
+
+**The Plan:**
+
+1. **Generation:** A dashboard page to generate/reset a random API key.
+2. **Verification:** A middleware or helper function that hashes an incoming `X-API-Key` header and checks it against the `profiles` table.
+3. **The Endpoint:** An `/api/upload` route that uses the Supabase Service Role (to bypass RLS for the specific upload action) to put the file into S3 and the metadata into Postgres.
+
+**Prompt for Claude Code:**
+
+> "Build a Next.js API route at `/api/upload`. It should:
+> 1. Accept a `POST` request with a `multipart/form-data` file.
+> 2. Authenticate the user via a custom `X-Zipline-Key` header.
+> 3. Upload the file to the Supabase 'uploads' bucket with a randomized filename.
+> 4. Record the file metadata in the `images` table.
+> 5. Return a JSON response with the public URL of the image."
+> 
+> 
+
+### Phase 4: The Dashboard (Zipline UI)
+
+Use Claude to scaffold a clean, minimalist gallery.
+
+**Key Features:**
+
+* **Grid View:** Fetch images from the `images` table for the logged-in user.
+* **Copy Link:** A button to quickly grab the raw image URL.
+* **Admin Panel:** A view only accessible if `is_admin` is true, allowing the creation of new invite codes.
+
+### Phase 5: The Shell Script (The Client)
+
+Finally, you need the tool that actually sends the images from your terminal.
+
+**Example `upload.sh` template to have Claude refine:**
+
+```bash
+#!/bin/bash
+# Usage: ./upload.sh image.png
+
+API_KEY="your_hashed_key_here"
+DOMAIN="https://your-host.com"
+
+RESPONSE=$(curl -X POST \
+  -H "X-Zipline-Key: $API_KEY" \
+  -F "file=@$1" \
+  "$DOMAIN/api/upload")
+
+# Extract URL using jq and copy to clipboard
+URL=$(echo $RESPONSE | jq -r '.url')
+echo $URL | pbcopy # or xclip
+echo "Uploaded: $URL"
+
+```
+
+### Strategic Tips for Claude Code:
+
+* **Context:** Give it the Zipline URL you provided and tell it: *"I want to mimic the minimalist design and the 'shareable link' behavior of Zipline."*
+* **S3 Compatibility:** Since Supabase Storage is S3-compatible, tell Claude to use the `@supabase/supabase-js` library for simplicity, as it handles the S3 signing automatically.
+* **File Renaming:** Ask Claude to implement "Original Name" vs "Randomized Name" options for the URLs, similar to how Zipline allows you to configure URL lengths.
