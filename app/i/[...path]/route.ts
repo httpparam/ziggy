@@ -28,6 +28,10 @@ export async function GET(
       return NextResponse.json({ error: 'Image not found' }, { status: 404 })
     }
 
+    // Convert Blob to ArrayBuffer to get raw bytes
+    const arrayBuffer = await data.arrayBuffer()
+    const uint8Array = new Uint8Array(arrayBuffer)
+
     // Get the content type from the file extension
     const ext = filename.split('.').pop()?.toLowerCase()
     const contentTypeMap: Record<string, string> = {
@@ -42,12 +46,11 @@ export async function GET(
 
     // Serve the raw image binary data with correct Content-Type
     // This is required for Discord/Slack to embed images properly
-    return new NextResponse(data, {
+    return new NextResponse(uint8Array, {
       status: 200,
       headers: {
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=31536000, immutable',
-        'Content-Disposition': 'inline',
       },
     })
   } catch (error) {
