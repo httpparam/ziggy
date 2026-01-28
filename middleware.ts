@@ -2,10 +2,11 @@ import { updateSession } from '@/lib/supabase/proxy'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  // Skip middleware for API routes (except auth) and static files
+  // Skip middleware for API routes, images, and static files
   if (
     request.nextUrl.pathname.startsWith('/api/upload') ||
     request.nextUrl.pathname.startsWith('/api/invites') ||
+    request.nextUrl.pathname.startsWith('/i/') ||
     request.nextUrl.pathname.startsWith('/_next') ||
     request.nextUrl.pathname.startsWith('/favicon.ico') ||
     request.nextUrl.pathname.startsWith('/static')
