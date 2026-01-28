@@ -19,16 +19,39 @@ export async function GET(
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    // Get the public URL from Supabase storage
-    const { data: { publicUrl } } = serviceSupabase.storage
+    // Get the file from Supabase storage
+    const { data, error } = await serviceSupabase.storage
       .from('uploads')
-      .getPublicUrl(filename)
+      .download(filename)
 
-    // Redirect to the Supabase public URL for better embed support
-    // Discord, Slack, and other platforms will embed the image directly from Supabase
-    return NextResponse.redirect(publicUrl, 301)
+    if (error || !data) {
+      return NextResponse.json({ error: 'Image not found' }, { status: 404 })
+    }
+
+    // Get the content type from the file extension
+    const ext = filename.split('.').pop()?.toLowerCase()
+    const contentTypeMap: Record<string, string> = {
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'png': 'image/png',
+      'gif': 'image/gif',
+      'webp': 'image/webp',
+      'svg': 'image/svg+xml',
+    }
+    const contentType = contentTypeMap[ext || ''] || 'image/jpeg'
+
+    // Serve the raw image binary data with correct Content-Type
+    // This is required for Discord/Slack to embed images properly
+    return new NextResponse(data, {
+      status: 200,
+      headers: {
+        'Content-Type': contentType,
+        'Cache-Control': 'public, max-age=31536000, immutable',
+        'Content-Disposition': 'inline',
+      },
+    })
   } catch (error) {
     console.error('Image proxy error:', error)
-    return NextResponse.json({ error: 'Image not found' }, { status: 404 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
