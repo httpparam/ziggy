@@ -50,6 +50,7 @@ export async function GET(
       status: 200,
       headers: {
         'Content-Type': contentType,
+        'Content-Length': uint8Array.byteLength.toString(),
         'Cache-Control': 'public, max-age=31536000, immutable',
         // CORS headers for Discord/Slack embed support
         'Access-Control-Allow-Origin': '*',
