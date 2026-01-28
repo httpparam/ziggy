@@ -232,8 +232,7 @@ export function UrlShortener({ initialUrls }: UrlShortenerProps) {
                     {url.target_url}
                   </p>
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-zinc-600 flex items-center gap-1.5">
-                      <Icon glyph="calendar" size={12} />
+                    <p className="text-xs text-zinc-600">
                       {new Date(url.created_at).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
