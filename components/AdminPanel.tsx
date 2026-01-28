@@ -131,9 +131,8 @@ export function AdminPanel({ initialInvites }: AdminPanelProps) {
             </code>
             <button
               onClick={() => copyCode(newCode)}
-              className="px-5 py-3 bg-[#5bc0de] hover:bg-[#4a9dc4] text-black font-bold rounded-xl transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl"
+              className="px-5 py-3 bg-[#5bc0de] hover:bg-[#4a9dc4] text-black font-bold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              <Icon glyph="clipboard" size={18} />
               Copy
             </button>
           </div>
