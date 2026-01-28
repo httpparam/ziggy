@@ -90,8 +90,8 @@ export function AdminPanel({ initialInvites }: AdminPanelProps) {
               <option value={25}>25 uses</option>
               <option value={100}>Unlimited</option>
             </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-              <Icon glyph="dropdown" size={16} className="text-zinc-400" />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
+              ▼
             </div>
           </div>
           <button
