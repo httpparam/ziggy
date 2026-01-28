@@ -78,40 +78,62 @@ export function AdminPanel({ initialInvites }: AdminPanelProps) {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <select
-            value={maxUses}
-            onChange={(e) => setMaxUses(parseInt(e.target.value))}
-            className="px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-[#5bc0de] outline-none"
-          >
-            <option value={1}>One-time use</option>
-            <option value={5}>5 uses</option>
-            <option value={10}>10 uses</option>
-            <option value={25}>25 uses</option>
-            <option value={100}>Unlimited</option>
-          </select>
+          <div className="relative">
+            <select
+              value={maxUses}
+              onChange={(e) => setMaxUses(parseInt(e.target.value))}
+              className="appearance-none px-4 py-2.5 pr-10 bg-zinc-900 border-2 border-zinc-700 hover:border-zinc-600 rounded-xl text-white text-sm font-medium focus:ring-2 focus:ring-[#5bc0de] focus:border-transparent outline-none transition-all cursor-pointer"
+            >
+              <option value={1}>One-time use</option>
+              <option value={5}>5 uses</option>
+              <option value={10}>10 uses</option>
+              <option value={25}>25 uses</option>
+              <option value={100}>Unlimited</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <Icon glyph="dropdown" size={16} className="text-zinc-400" />
+            </div>
+          </div>
           <button
             onClick={handleCreateInvite}
             disabled={creating}
-            className="px-4 py-2 bg-[#5bc0de] hover:bg-[#4a9dc4] text-black font-bold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+            className="px-5 py-2.5 bg-gradient-to-r from-[#5bc0de] to-[#4a9dc4] hover:from-[#4a9dc4] hover:to-[#3a8db4] text-white font-bold rounded-xl transition-all duration-200 focus:ring-2 focus:ring-[#5bc0de] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap shadow-lg shadow-[#5bc0de]/20 hover:shadow-xl hover:shadow-[#5bc0de]/30 flex items-center gap-2"
           >
-            {creating ? 'Creating...' : 'Generate'}
+            {creating ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Creating...
+              </>
+            ) : (
+              <>
+                <Icon glyph="plus" size={16} />
+                Generate
+              </>
+            )}
           </button>
         </div>
       </div>
 
       {newCode && (
-        <div className="p-4 bg-[#5bc0de]/20 border border-[#5bc0de]/50 rounded-lg">
-          <p className="text-sm font-medium text-white mb-2">
-            New invite code created!
-          </p>
-          <div className="flex items-center gap-2">
-            <code className="flex-1 px-3 py-2 bg-black rounded border border-zinc-700 text-sm font-mono text-white">
+        <div className="p-5 bg-gradient-to-r from-[#5bc0de]/20 to-[#4a9dc4]/20 border-2 border-[#5bc0de]/50 rounded-2xl shadow-lg shadow-[#5bc0de]/10">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-xl bg-[#5bc0de]/30 flex items-center justify-center">
+              <Icon glyph="code" size={20} className="text-[#5bc0de]" />
+            </div>
+            <div>
+              <p className="text-base font-bold text-white">New invite code created!</p>
+              <p className="text-xs text-zinc-400">Share this code with someone you want to invite</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <code className="flex-1 px-4 py-3 bg-black/80 rounded-xl border-2 border-[#5bc0de]/30 text-base font-mono text-white text-center">
               {newCode}
             </code>
             <button
               onClick={() => copyCode(newCode)}
-              className="px-3 py-2 bg-[#5bc0de] hover:bg-[#4a9dc4] text-black text-sm font-bold rounded transition"
+              className="px-5 py-3 bg-[#5bc0de] hover:bg-[#4a9dc4] text-black font-bold rounded-xl transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl"
             >
+              <Icon glyph="clipboard" size={18} />
               Copy
             </button>
           </div>

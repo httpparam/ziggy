@@ -177,6 +177,33 @@ create policy "Users can delete own uploads" on storage.objects for delete
   );
 ```
 
+### Migration 5: Shortened URLs Table
+
+```sql
+create table public.shortened_urls (
+  id uuid default gen_random_uuid() not null primary key,
+  code text unique not null,
+  target_url text not null,
+  user_id uuid references auth.users not null,
+  is_custom boolean default false not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.shortened_urls enable row level security;
+
+create policy "Users can view own URLs" on public.shortened_urls for select
+  to authenticated using ((select auth.uid()) = user_id);
+
+create policy "Users can insert own URLs" on public.shortened_urls for insert
+  to authenticated with check ((select auth.uid()) = user_id);
+
+create policy "Users can delete own URLs" on public.shortened_urls for delete
+  to authenticated using ((select auth.uid()) = user_id);
+
+create index shortened_urls_code_idx on public.shortened_urls(code);
+create index shortened_urls_user_id_idx on public.shortened_urls(user_id);
+```
+
 ---
 
 ## Storage Setup
