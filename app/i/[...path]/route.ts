@@ -51,6 +51,10 @@ export async function GET(
       headers: {
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=31536000, immutable',
+        // CORS headers for Discord/Slack embed support
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET',
+        'Access-Control-Allow-Headers': '*',
       },
     })
   } catch (error) {
